@@ -17,18 +17,19 @@ import {
   Trash2,
   ChevronsUpDown,
   FileCheck2,
+  MoreHorizontal,
 } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Popover,
   PopoverContent,
@@ -443,7 +444,7 @@ const Organizations = () => {
                             </Button>
                           </td>
                           <td>
-                            {/* <DropdownMenu>
+                            <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button size="sm" variant="ghost">
                                   <MoreHorizontal className="w-4 h-4" />
@@ -458,7 +459,7 @@ const Organizations = () => {
                                   Archive
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
-                            </DropdownMenu> */}
+                            </DropdownMenu>
                           </td>
                         </tr>
                       </CollapsibleTrigger>
