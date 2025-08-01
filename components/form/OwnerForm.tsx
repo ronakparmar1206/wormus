@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -13,6 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { authAPI, organizationAPI } from "@/lib/api";
+import { Loader2 } from "lucide-react";
 
 const ORGS = [
   { id: "acme", name: "Acme Corp" },
@@ -41,7 +43,8 @@ const formSchema = z
       .string()
       .min(2, { message: "Owner name must be at least 2 characters." }),
 
-    phoneNumber: z.string()
+    phoneNumber: z
+      .string()
       .min(10, { message: "Phone number must be at least 10 characters." })
       .max(10, { message: "Phone number must be at most 10 characters." }),
     email: z.string().email({ message: "Invalid email address." }),
@@ -79,6 +82,8 @@ const OwnerForm: React.FC<OwnerFormProps> = ({
   handleSelect,
   setStep,
 }) => {
+  const [organizations, setOrganizations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -91,25 +96,47 @@ const OwnerForm: React.FC<OwnerFormProps> = ({
       confirmPassword: "",
     },
   });
+  useEffect(() => {
+    const fetchOrganizations = async () => {
+      setLoading(true);
+      try {
+        const response = await organizationAPI.getAll("owner");
+        console.log(response);
+        setOrganizations(response?.data?.data?.data || []);
+      } catch (error: any) {
+        console.error("Failed to fetch organizations:", error);
+        setOrganizations([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrganizations();
+  }, []);
 
   const formShow = selectedOrg === "owner";
 
-  const onSubmit = (values: FormValues) => {
-    const payload = {
-      fullName: values.fullName,
+  const onSubmit = async (values: any) => {
+    try {
+      const payload = {
+        fullName: values.fullName,
+        phoneNumber: values.phoneNumber,
+        email: values.email,
+        password: values.password,
+        role: selectedOrg,
+      };
 
-      phoneNumber: values.phoneNumber,
-      email: values.email,
-      password: values.password,
-      role: selectedOrg,
-    };
-    console.log("Submitting:", payload);
+      const response = await authAPI.createOwner(payload);
+      console.log("Owner created successfully:", response.data);
 
-    handleSelect("manager");
-    setStep(2);
-    // send to backend...
+      handleSelect("manager");
+      setStep(2);
+    } catch (error: any) {
+      console.error("Failed to create owner:", error);
+      // Handle error (show toast, etc.)
+    }
   };
-
+  console.log(organizations);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -121,9 +148,10 @@ const OwnerForm: React.FC<OwnerFormProps> = ({
             </label>
             <Select value={selectedOrg} onValueChange={handleSelect}>
               <SelectTrigger className="w-full bg-[#F6F7FB]">
-                <SelectValue placeholder="Choose Organization or Create Owner">
+                {/* <SelectValue placeholder="Choose Organization or Create Owner">
                   {selectedOrg || undefined}
-                </SelectValue>
+                </SelectValue> */}
+                <SelectValue placeholder="Choose Organization or Create Owner" />
               </SelectTrigger>
               <SelectContent className="w-full p-1">
                 <SelectItem value="owner">
@@ -136,18 +164,27 @@ const OwnerForm: React.FC<OwnerFormProps> = ({
                     <div className="font-medium">Create Owner</div>
                   </div>
                 </SelectItem>
-                {ORGS.map((o) => (
-                  <SelectItem value={o.name} key={o.id}>
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        className="data-[state=checked]:bg-primary-100"
-                        checked={selectedOrg === o.name}
-                        onCheckedChange={() => handleSelect(o.name)}
-                      />
-                      <div className="font-medium">{o.name}</div>
-                    </div>
-                  </SelectItem>
-                ))}
+                {loading ? (
+                  <div className="flex items-center justify-center py-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="ml-2 text-sm">
+                      Loading organizations...
+                    </span>
+                  </div>
+                ) : (
+                  organizations?.map((org) => (
+                    <SelectItem value={org._id} key={org._id}>
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          className="data-[state=checked]:bg-primary-100"
+                          checked={selectedOrg === org._id}
+                          onCheckedChange={() => handleSelect(org._id)}
+                        />
+                        <div className="font-medium">{org?.fullName}</div>
+                      </div>
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
           </div>

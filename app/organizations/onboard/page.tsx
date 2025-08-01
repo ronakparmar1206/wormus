@@ -1,27 +1,49 @@
 "use client";
 import ManagerForm from "@/components/form/ManagerForm";
+import NameForm from "@/components/form/NameForm";
 import OwnerForm from "@/components/form/OwnerForm";
+import VesselFormOne from "@/components/form/VesselFormOne";
+import VesselFormTwo from "@/components/form/VesselFormTwo";
 import React, { useEffect, useState } from "react";
 
 const OnBoardPage = () => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(5);
   const [selectedOrg, setSelectedOrg] = useState<string>(""); // "" = non
   const [formShow, setFormShow] = useState(false);
+  const [selectManager, setSelectedManager] = useState<string>("");
   const handleSelect = (v: string) => {
+    console.log(v);
     if (v === "owner") {
       setSelectedOrg("owner");
       setFormShow(true);
     } else {
       setSelectedOrg(v);
-      setStep(1);
+      setStep(2);
     }
   };
+  const handleManagerSelect = (v: string) => {
+    if (v === "manager") {
+      setSelectedManager("manager");
+    } else {
+      setSelectedManager(v);
+      setStep(3);
+    }
+    setSelectedManager(v);
+  };
+  const handleName = () => {
+    setStep(4);
+  };
+  const formOne = () => {
+    setStep(5);
+  };
+  const formTwo = () => {
+    setStep(6);
+  };
+  // useEffect(() => {
+  //   if (!selectedOrg) setStep(4);
+  // }, [selectedOrg]);
 
-  useEffect(() => {
-    if (!selectedOrg) setStep(1);
-  }, [selectedOrg]);
-
-  const progress = step === 1 ? 1 : 2;
+  const progress = step;
   const progressPercent = Math.min(100, (progress / 6) * 100);
 
   return (
@@ -55,8 +77,22 @@ const OnBoardPage = () => {
         />
       )}
       {step === 2 && (
-        <ManagerForm selectedOrg={selectedOrg} handleSelect={handleSelect} />
+        <ManagerForm
+          selectedOrg={selectManager}
+          handleSelect={handleManagerSelect}
+        />
       )}
+
+      {step === 3 && (
+        <NameForm
+          handleSelect={handleName}
+          managerId={selectManager}
+          ownerId={selectedOrg}
+        />
+      )}
+
+      {step === 4 && <VesselFormOne handleSelect={formOne} />}
+      {step === 5 && <VesselFormTwo handleSelect={formTwo} />}
     </div>
   );
 };

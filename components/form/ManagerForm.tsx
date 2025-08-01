@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -13,6 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { authAPI, organizationAPI } from "@/lib/api";
+import { Loader2 } from "lucide-react";
 
 const ORGS = [
   { id: "acme", name: "Acme Corp" },
@@ -41,10 +43,7 @@ const formSchema = z
       .string()
       .min(2, { message: "Owner name must be at least 2 characters." }),
 
-    phoneNumber: z.string().regex(/^\+\d{7,15}$/, {
-      message:
-        "Phone must be in international format with country code, e.g. +919664871161",
-    }),
+    phoneNumber: z.string(),
     email: z.string().email({ message: "Invalid email address." }),
     confirmEmail: z.string().email({ message: "Invalid email address." }),
     password: passwordSchema,
@@ -75,6 +74,8 @@ interface ManagerProps {
 }
 
 const ManagerForm: React.FC<ManagerProps> = ({ selectedOrg, handleSelect }) => {
+  const [manager, setManager] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -87,20 +88,43 @@ const ManagerForm: React.FC<ManagerProps> = ({ selectedOrg, handleSelect }) => {
       confirmPassword: "",
     },
   });
+  useEffect(() => {
+    const fetchOrganizations = async () => {
+      setLoading(true);
+      try {
+        const response = await organizationAPI.getAll("manager");
+        console.log(response);
+        setManager(response?.data?.data?.data || []);
+      } catch (error: any) {
+        console.error("Failed to fetch organizations:", error);
+        setManager([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchOrganizations();
+  }, []);
   const formShow = selectedOrg === "manager";
 
-  const onSubmit = (values: FormValues) => {
-    const payload = {
-      fullName: values.fullName,
+  const onSubmit = async (values: any) => {
+    try {
+      const payload = {
+        fullName: values.fullName,
+        phoneNumber: values.phoneNumber,
+        email: values.email,
+        password: values.password,
+        role: selectedOrg,
+      };
 
-      phoneNumber: values.phoneNumber,
-      email: values.email,
-      password: values.password,
-      role: selectedOrg,
-    };
-    console.log("Submitting:", payload);
-    // send to backend...
+      const response = await authAPI.createOwner(payload);
+      console.log("Manager created successfully:", response.data);
+    handleSelect(response.data.data._id);
+      // Handle success (redirect, show success message, etc.)
+    } catch (error: any) {
+      console.error("Failed to create manager:", error);
+      // Handle error (show toast, etc.)
+    }
   };
 
   return (
@@ -114,9 +138,7 @@ const ManagerForm: React.FC<ManagerProps> = ({ selectedOrg, handleSelect }) => {
             </label>
             <Select value={selectedOrg} onValueChange={handleSelect}>
               <SelectTrigger className="w-full bg-[#F6F7FB]">
-                <SelectValue placeholder="Choose Organization or Create Owner">
-                  {selectedOrg || undefined}
-                </SelectValue>
+                <SelectValue placeholder="Choose Organization or Create Owner" />
               </SelectTrigger>
               <SelectContent className="w-full p-1">
                 <SelectItem value="manager">
@@ -129,18 +151,25 @@ const ManagerForm: React.FC<ManagerProps> = ({ selectedOrg, handleSelect }) => {
                     <div className="font-medium">Create Manager</div>
                   </div>
                 </SelectItem>
-                {ORGS.map((o) => (
-                  <SelectItem value={o.name} key={o.id}>
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        className="data-[state=checked]:bg-primary-100"
-                        checked={selectedOrg === o.name}
-                        onCheckedChange={() => handleSelect(o.name)}
-                      />
-                      <div className="font-medium">{o.name}</div>
-                    </div>
-                  </SelectItem>
-                ))}
+                {loading ? (
+                  <div className="flex items-center justify-center py-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="ml-2 text-sm">Loading managers...</span>
+                  </div>
+                ) : (
+                  manager.map((mgr) => (
+                    <SelectItem value={mgr._id} key={mgr._id}>
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          className="data-[state=checked]:bg-primary-100"
+                          checked={selectedOrg === mgr._id}
+                          onCheckedChange={() => handleSelect(mgr._id)}
+                        />
+                        <div className="font-medium">{mgr.fullName}</div>
+                      </div>
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
           </div>

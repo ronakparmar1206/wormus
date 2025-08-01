@@ -5,7 +5,6 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -16,7 +15,6 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import { cn } from "@/lib/utils";
 
 export function SelectBox({
   label,
@@ -31,10 +29,11 @@ export function SelectBox({
   control: any;
   name: string;
   placeholder: string;
-  data?: string[];
+  data?: any[];
   cssStyles?: string;
   disabled?: boolean;
 }) {
+  console.log(data, "dataa");
   return (
     <FormField
       control={control}
@@ -43,14 +42,14 @@ export function SelectBox({
         return (
           <>
             <FormItem>
-              <FormLabel className="text-black">{label}</FormLabel>
+              <FormLabel className="text-[#5E6366] text-xs">{label}</FormLabel>
               <FormControl>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field?.value ? field.value : ""}
                 >
                   <SelectTrigger
-                    className={cn("bg-secondary-1 capitalize", cssStyles)}
+                    className={`w-full bg-[#EFF1F999]/60  ${cssStyles}`}
                     disabled={disabled}
                   >
                     <SelectValue placeholder={placeholder} />
@@ -64,10 +63,10 @@ export function SelectBox({
                               key={index}
                               className="capitalize"
                             >
-                              {e?.name || e}
+                              {e?.fullName || e}
                             </SelectItem>
                           ))
-                        : "No Patient"}
+                        : "No Vessels"}
                     </SelectGroup>
                   </SelectContent>
                 </Select>
