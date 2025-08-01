@@ -306,10 +306,10 @@ const Organizations = () => {
             />
           </div>
 
-          <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button className="bg-primary-100 text-primary-foreground hover:bg-primary/90">
             Add Org. & Vsl{" "}
           </Button>
-          <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+          <Button className="bg-primary-100 text-primary-foreground hover:bg-primary/90">
             Manage User{" "}
           </Button>
         </div>
@@ -368,7 +368,7 @@ const Organizations = () => {
                           className={cn(
                             "bg-background relative z-20 [&>td]:p-4 [&>td]:not-first:border-y [&>td]:last:rounded-r-lg [&>td]:nth-[2]:rounded-l-lg [&>td]:nth-[2]:border-l [&>td]:last:border-r",
                             expandedRows.has(org.id)
-                              ? "[&>td]:not-first:bg-primary [&>td]:not-first:text-primary-foreground"
+                              ? "[&>td]:not-first:bg-primary-100 [&>td]:not-first:text-primary-foreground"
                               : ""
                           )}
                         >
@@ -381,7 +381,7 @@ const Organizations = () => {
                                 viewBox="0 0 27 25"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
-                                className="fill-primary size-full"
+                                className="fill-primary-100 size-full"
                               >
                                 <g clip-path="url(#clip0_2013_11238)">
                                   <path
@@ -424,7 +424,12 @@ const Organizations = () => {
                           <td>
                             <Button
                               size="sm"
-                              className="bg-primary text-primary-foreground hover:bg-primary/90"
+                              className={cn(
+                                "bg-primary-100 text-white hover:bg-unset cursor-pointer",
+                                expandedRows.has(org.id)
+                                  ? "bg-white text-primary-100"
+                                  : ""
+                              )}
                             >
                               Add V.
                             </Button>
@@ -476,8 +481,8 @@ const Organizations = () => {
                                       <thead>
                                         <tr
                                           className={cn(
-                                            "bg-primary/30",
-                                            "[&>th]:text-left [&>th]:p-2 [&>th]:px-4 [&>th]:pt-6 [&>th]:text-sm [&>th]:font-medium [&>th]:text-primary"
+                                            "bg-primary-200",
+                                            "[&>th]:text-left [&>th]:p-2 [&>th]:px-4 [&>th]:pt-6 [&>th]:text-sm [&>th]:font-medium [&>th]:text-primary-100"
                                           )}
                                         >
                                           <th>No.</th>
@@ -503,7 +508,7 @@ const Organizations = () => {
                                             <td className="p-2 px-4 text-sm text-muted-foreground">
                                               {vessel.managedBy}
                                             </td>
-                                            <td className="p-2 px-4 text-sm font-mono">
+                                            <td className="p-2 px-4 text-sm">
                                               {vessel.imoNo}
                                             </td>
                                             <td className="p-2 px-4 text-sm text-muted-foreground">
@@ -514,8 +519,8 @@ const Organizations = () => {
                                       </tbody>
                                     </table>
                                   </div>
-                                  <div className="p-4 flex justify-end">
-                                    <Button>
+                                  <div className="p-4 flex justify-end  text-white">
+                                    <Button className="bg-primary-100">
                                       <FileCheck2 /> View Docs
                                     </Button>
                                   </div>
