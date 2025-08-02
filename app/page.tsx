@@ -51,8 +51,10 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   );
 };
 
+export type AreaChatType = { month: string; value: number };
 export default function Home() {
   const [dashboardData, setDashboardData] = useState<any>(null);
+  const [areaChartData, setAreaChartData] = useState<AreaChatType[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -63,6 +65,14 @@ export default function Home() {
         const response = await dashboardAPI.getDashboard();
         console.log("Dashboard Response:", response.data);
         setDashboardData(response.data?.data);
+        setAreaChartData(
+          (response.data?.data?.chartData || []).map(
+            (value: { monthName: string; count: number }) => ({
+              month: value.monthName,
+              value: value.count || 0,
+            })
+          )
+        );
       } catch (error) {
         console.error("Failed to fetch dashboard:", error);
       } finally {
@@ -130,7 +140,7 @@ export default function Home() {
       </div>
       <div className="grid grid-cols-2 gap-4 my-4">
         <BarCharts />
-        <LineCharts />
+        <LineCharts areaChartData={areaChartData} />
       </div>
     </div>
   );
