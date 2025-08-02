@@ -18,6 +18,8 @@ import {
   ChevronsUpDown,
   FileCheck2,
   MoreHorizontal,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import {
   Collapsible,
@@ -39,6 +41,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { organizationAPI, dashboardAPI } from "@/lib/api";
+import { DeleteModal } from "@/components/modal/DeleteModal";
 
 interface Vessel {
   id: string;
@@ -85,6 +88,8 @@ const Organizations = () => {
   const [dateRenewal, setDateRenewal] = useState<Date | undefined>(new Date());
   const [dateRenewalModal, setDateRenewalModal] = useState(false);
   const router = useRouter();
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [selectedOrgId, setSelectedOrgId] = useState<string | null>(null);
 
   const [orgsRaw, setOrgsRaw] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -194,8 +199,33 @@ const Organizations = () => {
     setCurrentPage(page);
   };
 
+  const handleDeleteClick = (orgId: string) => {
+    setSelectedOrgId(orgId);
+    setDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (selectedOrgId) {
+      try {
+        // await organizationAPI.delete(selectedOrgId);
+
+        // Remove from local state immediately for better UX
+        setOrgsRaw((prevOrgs) =>
+          prevOrgs.filter((org) => org._id !== selectedOrgId)
+        );
+
+        console.log("Deleting organization:", selectedOrgId);
+        // await organizationAPI.delete(selectedOrgId);
+      } catch (error) {
+        console.error("Failed to delete organization:", error);
+        // If API call fails, you might want to revert the local state
+        // by refetching the data
+      }
+    }
+  };
+
   return (
-    <div className="w-full  mx-auto p-6 bg-background">
+    <div className="w-full  mx-auto bg-background">
       <div className="mb-6">
         <h1 className="text-lg font-semibold text-foreground mb-6">
           Organization Group
@@ -376,14 +406,14 @@ const Organizations = () => {
                                 >
                                   <g clip-path="url(#clip0_2013_11238)">
                                     <path
-                                      fill-rule="evenodd"
-                                      clip-rule="evenodd"
+                                      fillRule="evenodd"
+                                      clipRule="evenodd"
                                       d="M25 8.06678H23.7179V5.58469C23.7179 4.90026 23.1429 4.34365 22.4359 4.34365H14.1026C13.9526 4.34365 13.8077 4.29277 13.6923 4.20031L10.0244 1.24104H2.5641C1.85705 1.24104 1.28205 1.79765 1.28205 2.48209V6.82574H25V8.06678H1.28205H0V2.48209C0 1.11322 1.15 0 2.5641 0H10.2564C10.4064 0 10.5513 0.0508828 10.6667 0.14334L14.3346 3.10261H22.4359C23.85 3.10261 25 4.21582 25 5.58469V8.06678Z"
                                     />
                                     <path
                                       d="M25 8.06678H23.7179V5.58469C23.7179 4.90026 23.1429 4.34365 22.4359 4.34365H14.1026C13.9526 4.34365 13.8077 4.29277 13.6923 4.20031L10.0244 1.24104H2.5641C1.85705 1.24104 1.28205 1.79765 1.28205 2.48209V6.82574H25V8.06678H1.28205H0V2.48209C0 1.11322 1.15 0 2.5641 0H10.2564C10.4064 0 10.5513 0.0508828 10.6667 0.14334L14.3346 3.10261H22.4359C23.85 3.10261 25 4.21582 25 5.58469V8.06678Z"
                                       stroke="white"
-                                      stroke-width="0.2"
+                                      strokeWidth="0.2"
                                     />
                                     <rect
                                       y="6"
@@ -430,6 +460,11 @@ const Organizations = () => {
                                     ? "bg-white text-primary-100"
                                     : ""
                                 )}
+                                onClick={() =>
+                                  router.push(
+                                    `/organizations/onboard?org=${org.id}`
+                                  )
+                                }
                               >
                                 Add V.
                               </Button>
@@ -450,6 +485,7 @@ const Organizations = () => {
                                 size="sm"
                                 variant="ghost"
                                 className="text-destructive hover:text-destructive"
+                                onClick={() => handleDeleteClick(org.id)}
                               >
                                 <Trash2 className="w-4 h-4" />
                               </Button>
@@ -558,12 +594,7 @@ const Organizations = () => {
         </Card>
 
         {/* Pagination */}
-        <div className="flex flex-wrap items-center justify-between mt-6 gap-4">
-          <div className="text-sm text-muted-foreground">
-            Showing {showingFrom} to {showingTo} of {filteredOrgs.length}{" "}
-            organizations
-          </div>
-
+        <div className="flex flex-wrap items-center justify-center mt-6 gap-4">
           <div className="flex items-center gap-2">
             <div className="flex gap-1">
               <Button
@@ -572,7 +603,7 @@ const Organizations = () => {
                 onClick={() => handlePageClick(currentPage - 1)}
                 disabled={currentPage === 1}
               >
-                Prev
+                <ChevronLeft />
               </Button>
               {/* simple page buttons, cap to window of 5 */}
               {Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -598,12 +629,11 @@ const Organizations = () => {
                 onClick={() => handlePageClick(currentPage + 1)}
                 disabled={currentPage === totalPages}
               >
-                Next
+                <ChevronRight />
               </Button>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="text-sm">Per page:</div>
               <Select
                 value={String(pageSize)}
                 onValueChange={(v) => {
@@ -611,7 +641,7 @@ const Organizations = () => {
                   setCurrentPage(1);
                 }}
               >
-                <SelectTrigger className="w-[60px]">
+                <SelectTrigger className="w-[100px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -626,6 +656,11 @@ const Organizations = () => {
           </div>
         </div>
       </div>
+      <DeleteModal
+        open={deleteModal}
+        onOpenChange={setDeleteModal}
+        onConfirm={handleDeleteConfirm}
+      />
     </div>
   );
 };

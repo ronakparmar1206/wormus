@@ -24,12 +24,18 @@ export const organizationAPI = {
   update: (id: string, data: any): Promise<any> =>
     api.put(`/api/organizations/${id}`, data),
 
-  delete: (id: string): Promise<any> =>
-    api.delete(`/api/organizations/${id}`),
+  delete: (organisationId: any): Promise<any> =>
+    api.delete(`/api/v1/organisation/delete`, {
+      data: {
+        organisationId,
+      }
+    }),
 };
 
 export const dashboardAPI = {
   getOverview: (): Promise<any> =>
     api.get('/api/v1/common/dashboard-overview'),
+  getDashboard: (): Promise<any> =>
+    api.get('/api/v1/common/dashboard'),
 };
 
