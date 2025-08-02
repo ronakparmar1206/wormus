@@ -293,41 +293,41 @@ const Organizations = () => {
         {/* Table */}
         <Card className="overflow-hidden border-0 shadow-none">
           <div className="overflow-x-auto">
-            <table className="w-full border-separate border-spacing-y-2">
+            <table className="w-full border-separate border-spacing-y-2 table-auto min-w-full">
               <thead className="bg-table-header">
                 <tr
                   className={cn(
                     "border-table-border",
-                    "[&>th]:Text-left [&>th]:whitespace-nowrap [&>th]:p-4 [&>th]:font-normal [&>th]:text-muted-foreground"
+                    "[&>th]:whitespace-nowrap [&>th]:p-4 [&>th]:font-normal [&>th]:text-muted-foreground"
                   )}
                 >
-                  <th></th>
-                  <th>Org Name</th>
-                  <th>
+                  <th className=""></th>
+                  <th className="text-left">Org Name</th>
+                  <th className=" text-left ">
                     <button className="flex items-center gap-1 whitespace-nowrap">
                       Date of Onboarding
                       <ChevronsUpDown className="mt-0.5 size-4 text-foreground" />
                     </button>
                   </th>
-                  <th>
+                  <th className="text-left">
                     <button className="flex items-center gap-1 whitespace-nowrap">
                       Last Renewal
                       <ChevronsUpDown className="mt-0.5 size-4 text-foreground" />
                     </button>
                   </th>
-                  <th>IMO</th>
-                  <th>Active Vessels</th>
-                  <th>
+                  <th className="text-center">IMO</th>
+                  <th className="text-center">Active Vessels</th>
+                  <th className="text-left">
                     <button className="flex items-center gap-1 whitespace-nowrap">
                       Upcoming Invoices
                       <ChevronsUpDown className="mt-0.5 size-4 text-foreground" />
                     </button>
                   </th>
-                  <th>Managed By</th>
-                  <th>Add Vessel</th>
-                  <th>Modify</th>
-                  <th>Delete</th>
-                  <th>More</th>
+                  <th className="text-center">Managed By</th>
+                  <th className="text-center">Add Vessel</th>
+                  <th className="text-center">Modify</th>
+                  <th className="text-center">Delete</th>
+                  <th className="text-center">More</th>
                 </tr>
               </thead>
               <tbody>
@@ -357,7 +357,7 @@ const Organizations = () => {
                         <CollapsibleTrigger asChild>
                           <tr
                             className={cn(
-                              "bg-background relative z-20 [&>td]:p-4 [&>td]:not-first:border-y [&>td]:last:rounded-r-lg [&>td]:nth-[2]:rounded-l-lg [&>td]:nth-[2]:border-l [&>td]:last:border-r",
+                              "bg-background relative z-50 [&>td]:p-4 [&>td]:not-first:border-y [&>td]:last:rounded-r-lg [&>td]:nth-[2]:rounded-l-lg [&>td]:nth-[2]:border-l [&>td]:last:border-r",
                               expandedRows.has(org.id)
                                 ? "[&>td]:not-first:bg-primary-100 [&>td]:not-first:text-primary-foreground"
                                 : ""
@@ -412,11 +412,16 @@ const Organizations = () => {
                             </td>
                             <td>{org.onboardingDate}</td>
                             <td>{org.lastRenewal}</td>
-                            <td>{org.imo}</td>
-                            <td>{org.activeVessels}</td>
-                            <td>{org.upcomingInvoices}</td>
-                            <td>{org.managedBy}</td>
-                            <td>
+                            <td className="text-center">{org.imo}</td>
+                            <td className="text-center">{org.activeVessels}</td>
+                            <td className="text-center">
+                              {org.upcomingInvoices}
+                            </td>
+                            <td className="text-center">{org.managedBy}</td>
+                            <td
+                              className="text-center"
+                              onClick={(e) => e.preventDefault()}
+                            >
                               <Button
                                 size="sm"
                                 className={cn(
@@ -429,12 +434,18 @@ const Organizations = () => {
                                 Add V.
                               </Button>
                             </td>
-                            <td>
+                            <td
+                              className="text-center"
+                              onClick={(e) => e.preventDefault()}
+                            >
                               <Button size="sm" variant="ghost">
                                 <Edit className="w-4 h-4" />
                               </Button>
                             </td>
-                            <td>
+                            <td
+                              className="text-center"
+                              onClick={(e) => e.preventDefault()}
+                            >
                               <Button
                                 size="sm"
                                 variant="ghost"
@@ -443,7 +454,10 @@ const Organizations = () => {
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </td>
-                            <td>
+                            <td
+                              className="text-center"
+                              onClick={(e) => e.preventDefault()}
+                            >
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button size="sm" variant="ghost">
@@ -469,7 +483,7 @@ const Organizations = () => {
                             <tr>
                               <td></td>
                               <td colSpan={11} className="p-0">
-                                <div className="bg-accent/50 rounded-lg overflow-hidden border relative -top-6">
+                                <div className="bg-accent/50 rounded-lg overflow-hidden border relative -top-6 z-10">
                                   <div>
                                     <div className="overflow-x-auto">
                                       <table className="w-full rounded-2xl">
@@ -484,8 +498,18 @@ const Organizations = () => {
                                             <th>Vessel Names</th>
                                             <th>Type</th>
                                             <th>Managed By</th>
-                                            <th>IMO No.</th>
-                                            <th>Onboarding Date</th>
+                                            <th className="text-center!">
+                                              IMO No.
+                                            </th>
+                                            <th className="text-center!">
+                                              Onboarding Date
+                                            </th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
                                           </tr>
                                         </thead>
                                         <tbody>
@@ -503,10 +527,10 @@ const Organizations = () => {
                                               <td className="p-2 px-4 text-sm text-muted-foreground">
                                                 {vessel.managedBy}
                                               </td>
-                                              <td className="p-2 px-4 text-sm">
+                                              <td className="p-2 px-4 text-sm text-center">
                                                 {vessel.imoNo}
                                               </td>
-                                              <td className="p-2 px-4 text-sm text-muted-foreground">
+                                              <td className="p-2 px-4 text-sm text-muted-foreground text-center">
                                                 {vessel.onboardingDate}
                                               </td>
                                             </tr>
