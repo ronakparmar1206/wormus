@@ -42,6 +42,7 @@ const formSchema = z
     fullName: z
       .string()
       .min(2, { message: "Owner name must be at least 2 characters." }),
+    passportNo: z.string().min(1, { message: "Passport number is required." }),
 
     phoneNumber: z.string(),
     email: z.string().email({ message: "Invalid email address." }),
@@ -82,6 +83,7 @@ const ManagerForm: React.FC<ManagerProps> = ({ selectedOrg, handleSelect }) => {
       fullName: "",
 
       phoneNumber: "",
+      passportNo: "",
       email: "",
       confirmEmail: "",
       password: "",
@@ -119,7 +121,7 @@ const ManagerForm: React.FC<ManagerProps> = ({ selectedOrg, handleSelect }) => {
 
       const response = await authAPI.createOwner(payload);
       console.log("Manager created successfully:", response.data);
-    handleSelect(response.data.data._id);
+      handleSelect(response.data.data._id);
       // Handle success (redirect, show success message, etc.)
     } catch (error: any) {
       console.error("Failed to create manager:", error);
@@ -138,7 +140,7 @@ const ManagerForm: React.FC<ManagerProps> = ({ selectedOrg, handleSelect }) => {
             </label>
             <Select value={selectedOrg} onValueChange={handleSelect}>
               <SelectTrigger className="w-full bg-[#F6F7FB]">
-                <SelectValue placeholder="Choose Organization or Create Owner" />
+                <SelectValue placeholder="Choose Manager or Create Manager" />
               </SelectTrigger>
               <SelectContent className="w-full p-1">
                 <SelectItem value="manager">
@@ -182,6 +184,14 @@ const ManagerForm: React.FC<ManagerProps> = ({ selectedOrg, handleSelect }) => {
                 title="Designated Admin Name"
                 placeholder="Admin Name"
                 type="text"
+                control={form.control}
+                require
+              />
+              <FormInput
+                name="passportNo"
+                title="Manager Passport No."
+                placeholder="Passport No."
+                type="number"
                 control={form.control}
                 require
               />

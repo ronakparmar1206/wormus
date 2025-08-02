@@ -63,7 +63,7 @@ export function SelectBox({
                               key={index}
                               className="capitalize"
                             >
-                              {e?.fullName || e}
+                              {e?.fullName || e?.organisationName || e}
                             </SelectItem>
                           ))
                         : "No Vessels"}

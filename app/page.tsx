@@ -22,6 +22,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   const isPositive = delta >= 0;
   return (
     <div
+    
       className={`flex flex-col justify-between p-4 rounded-xl shadow-sm border border-transparent ${bgClass}`}
     >
       <div className="flex flex-col h-full gap-3">

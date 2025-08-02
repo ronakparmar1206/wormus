@@ -7,8 +7,8 @@ import { useForm } from "react-hook-form";
 import { Form } from "../ui/form";
 import FormInput from "../common/FormInput";
 
-import { authAPI, organizationAPI } from "@/lib/api";
-import { Loader2 } from "lucide-react";
+import { organizationAPI } from "@/lib/api";
+
 import { SelectBox } from "../common/SelectBox";
 
 const FLEET_GROUPS = [
@@ -44,6 +44,7 @@ const formSchema = z
       .string()
       .regex(/^\d{7}$/, { message: "IMO number must be exactly 7 digits." }),
     captainEmail: z.string().email({ message: "Invalid captain email." }),
+    passportNo: z.string().min(1, { message: "Passport number is required." }),
     password: passwordSchema,
     confirmPassword: z.string(),
     assignFleetGroup: z.string(),
@@ -72,6 +73,7 @@ const VesselFormOne = ({ handleSelect }: any) => {
       vesselName: "",
       imoNo: "",
       captainEmail: "",
+      passportNo: "",
       password: "",
       confirmPassword: "",
       assignFleetGroup: "Fleet A",
@@ -83,7 +85,7 @@ const VesselFormOne = ({ handleSelect }: any) => {
     const fetchOrganizations = async () => {
       setLoadingOrgs(true);
       try {
-        const response = await organizationAPI.getAll("owner");
+        const response = await organizationAPI.getOrg();
         setOrganizations(response?.data?.data?.data || []);
       } catch (err: any) {
         console.error("Failed to fetch organizations:", err);
@@ -101,8 +103,9 @@ const VesselFormOne = ({ handleSelect }: any) => {
         vesselName: values.vesselName,
         imoNo: values.imoNo,
         captainEmail: values.captainEmail,
-        ownerId: values.ownerId,
+        organisationId: values.ownerId,
         password: values.password,
+        passportNo: values.passportNo,
         assignFleetGroup: values.assignFleetGroup,
         similarSisterGroup: values.similarSisterGroup,
       };
@@ -115,18 +118,31 @@ const VesselFormOne = ({ handleSelect }: any) => {
     }
   };
 
+  if (loadingOrgs) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-100" />
+        <p className="mt-2 text-sm text-gray-600">Loading organizations...</p>
+      </div>
+    );
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="grid grid-cols-2 gap-4">
           {/* Designated Manager / Owner */}
           <SelectBox
-            label="Designated Manager"
+            label="Organization"
             control={form.control}
             name="ownerId"
             placeholder="Select Manager / Owner"
-            data={organizations}
-            disabled={loadingOrgs}
+            data={
+              organizations.length > 0
+                ? organizations
+                : [{ label: "No organizations available", value: "" }]
+            }
+            disabled={organizations.length === 0}
           />
 
           {/* Vessel Name */}
@@ -155,6 +171,16 @@ const VesselFormOne = ({ handleSelect }: any) => {
             title="Captain Email"
             placeholder="captain@example.com"
             type="email"
+            control={form.control}
+            require
+          />
+
+          {/* Passport No */}
+          <FormInput
+            name="passportNo"
+            title="Captain Passport No."
+            placeholder="Passport No."
+            type="text"
             control={form.control}
             require
           />

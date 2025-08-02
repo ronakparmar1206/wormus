@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/common/Header";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -24,6 +25,7 @@ export default function RootLayout({
         <div className="flex flex-col min-h-screen">
           <Header />
           <div className="h-[calc(100dvh-80px)] overflow-y-auto p-8">
+            <Toaster richColors />
             {children}
           </div>
         </div>

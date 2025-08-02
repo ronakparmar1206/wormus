@@ -3,11 +3,13 @@ import ManagerForm from "@/components/form/ManagerForm";
 import NameForm from "@/components/form/NameForm";
 import OwnerForm from "@/components/form/OwnerForm";
 import VesselFormOne from "@/components/form/VesselFormOne";
+import VesselFormThree from "@/components/form/VesselFormThree";
 import VesselFormTwo from "@/components/form/VesselFormTwo";
+import VesselFormFour from "@/components/form/VesselFour";
 import React, { useEffect, useState } from "react";
 
 const OnBoardPage = () => {
-  const [step, setStep] = useState(5);
+  const [step, setStep] = useState(1);
   const [selectedOrg, setSelectedOrg] = useState<string>(""); // "" = non
   const [formShow, setFormShow] = useState(false);
   const [selectManager, setSelectedManager] = useState<string>("");
@@ -42,7 +44,12 @@ const OnBoardPage = () => {
   // useEffect(() => {
   //   if (!selectedOrg) setStep(4);
   // }, [selectedOrg]);
-
+  const formThree = () => {
+    setStep(7);
+  };
+  const formFour = () => {
+    setStep(8);
+  };
   const progress = step;
   const progressPercent = Math.min(100, (progress / 6) * 100);
 
@@ -64,7 +71,7 @@ const OnBoardPage = () => {
             }}
           />
         </div>
-        <div className="text-xs mt-1">Step {progress} of 6</div>
+        <div className="text-xs mt-1">Step {progress} of 7</div>
       </div>
 
       {/* Owner form with select inside */}
@@ -93,6 +100,10 @@ const OnBoardPage = () => {
 
       {step === 4 && <VesselFormOne handleSelect={formOne} />}
       {step === 5 && <VesselFormTwo handleSelect={formTwo} />}
+      {step === 6 && <VesselFormThree handleSelect={formThree} />}
+      {step === 7 && (
+        <VesselFormFour handleSelect={formFour} managerId={selectManager} />
+      )}
     </div>
   );
 };

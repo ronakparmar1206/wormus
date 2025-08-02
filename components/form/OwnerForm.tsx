@@ -129,7 +129,7 @@ const OwnerForm: React.FC<OwnerFormProps> = ({
       const response = await authAPI.createOwner(payload);
       console.log("Owner created successfully:", response.data);
 
-      handleSelect("manager");
+      handleSelect(response.data.data._id);
       setStep(2);
     } catch (error: any) {
       console.error("Failed to create owner:", error);

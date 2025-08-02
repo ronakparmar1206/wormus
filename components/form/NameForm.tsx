@@ -13,6 +13,9 @@ const formSchema = z.object({
   organisationName: z
     .string()
     .min(2, { message: "Organization name must be at least 2 characters." }),
+  registrationNo: z
+    .string()
+    .min(1, { message: "Registration number is required." }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -22,6 +25,7 @@ const NameForm: React.FC<any> = ({ ownerId, managerId, handleSelect }) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       organisationName: "",
+      registrationNo: "",
     },
   });
 
@@ -29,6 +33,7 @@ const NameForm: React.FC<any> = ({ ownerId, managerId, handleSelect }) => {
     try {
       const payload = {
         organisationName: values.organisationName,
+        registrationNo: values.registrationNo,
         ownerId,
         managerId,
       };
@@ -55,6 +60,14 @@ const NameForm: React.FC<any> = ({ ownerId, managerId, handleSelect }) => {
             name="organisationName"
             title="Organization Name"
             placeholder="Enter Organization Name"
+            type="text"
+            control={form.control}
+            require
+          />
+          <FormInput
+            name="registrationNo"
+            title="Organization Regsitration No."
+            placeholder="Enter Registration No."
             type="text"
             control={form.control}
             require
