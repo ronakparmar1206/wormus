@@ -42,6 +42,7 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { organizationAPI, dashboardAPI } from "@/lib/api";
 import { DeleteModal } from "@/components/modal/DeleteModal";
+import { size } from "zod";
 
 interface Vessel {
   id: string;
@@ -147,6 +148,7 @@ const Organizations = () => {
         activeVessels: typeof org.totalVess === "number" ? org.totalVess : 0,
         upcomingInvoices: 0,
         managedBy: org?.managerInfo?.fullName || "-",
+        managerId: org?.managerInfo?._id || "",
         vessels,
       };
     });
@@ -207,7 +209,7 @@ const Organizations = () => {
   const handleDeleteConfirm = async () => {
     if (selectedOrgId) {
       try {
-        // await organizationAPI.delete(selectedOrgId);
+        await organizationAPI.delete(selectedOrgId);
 
         // Remove from local state immediately for better UX
         setOrgsRaw((prevOrgs) =>
@@ -222,6 +224,15 @@ const Organizations = () => {
         // by refetching the data
       }
     }
+  };
+  const handleAddVesselClick = (org: any, e: React.MouseEvent) => {
+    console.log(org, "organization");
+    e.stopPropagation(); // prevent collapsing toggle if inside CollapsibleTrigger
+    if (org.managerId) {
+      localStorage.setItem("managerId", org.managerId);
+    }
+    localStorage.setItem("organizationId", org.id);
+    router.push(`/organizations/onboard?vessel=true`);
   };
 
   return (
@@ -440,10 +451,12 @@ const Organizations = () => {
                                 <span className="font-medium">{org.name}</span>
                               </div>
                             </td>
-                            <td>{org.onboardingDate}</td>
-                            <td>{org.lastRenewal}</td>
-                            <td className="text-center">{org.imo}</td>
-                            <td className="text-center">{org.activeVessels}</td>
+                            <td>{org?.onboardingDate}</td>
+                            <td>{org?.lastRenewal}</td>
+                            <td className="text-center">{org?.imo}</td>
+                            <td className="text-center">
+                              {org?.activeVessels}
+                            </td>
                             <td className="text-center">
                               {org.upcomingInvoices}
                             </td>
@@ -460,11 +473,7 @@ const Organizations = () => {
                                     ? "bg-white text-primary-100"
                                     : ""
                                 )}
-                                onClick={() =>
-                                  router.push(
-                                    `/organizations/onboard?org=${org.id}`
-                                  )
-                                }
+                                onClick={(e) => handleAddVesselClick(org, e)}
                               >
                                 Add V.
                               </Button>

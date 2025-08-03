@@ -9,6 +9,9 @@ import FormInput from "../common/FormInput";
 import { SelectBox } from "../common/SelectBox";
 import { authAPI, organizationAPI } from "@/lib/api";
 import { toast } from "sonner";
+import { Router } from "lucide-react";
+import router from "next/router";
+import { useRouter } from "next/navigation";
 
 const PROPULSION_TYPES = [
   "Diesel",
@@ -54,6 +57,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const VesselFormFour = ({ managerId }: any) => {
+  const router = useRouter();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -70,16 +74,6 @@ const VesselFormFour = ({ managerId }: any) => {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      const payload = {
-        mainEngineType: values.mainEngineType,
-        auxillaryEngines: values.auxillaryEngines,
-        teuCapacity: values.teuCapacity,
-        cargoCapacity: values.cargoCapacity,
-        communicationSystem: values.communicationSystem,
-        classSociety: values.classSociety,
-        propulsionType: values.propulsionType,
-        fuelType: values.fuelType,
-      };
       let vesselOne: any = {};
       let vesselTwo: any = {};
       let vesselThree: any = {};
@@ -120,7 +114,13 @@ const VesselFormFour = ({ managerId }: any) => {
         managerId,
       };
       await organizationAPI.createVessel(vesselResponse);
+      localStorage.removeItem("vesselOne");
+      localStorage.removeItem("vesselTwo");
+      localStorage.removeItem("vesselThree");
+      localStorage.removeItem("organizationId");
+      localStorage.removeItem("managerId");
       toast.success("Vessel created successfully");
+      router.push("/organizations");
     } catch (err: any) {
       console.error("Failed to save vessel form four:", err);
     }

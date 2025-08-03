@@ -25,11 +25,7 @@ export const organizationAPI = {
     api.put(`/api/organizations/${id}`, data),
 
   delete: (organisationId: any): Promise<any> =>
-    api.delete(`/api/v1/organisation/delete`, {
-      data: {
-        organisationId,
-      }
-    }),
+    api.delete(`/api/v1/organisation/delete?organisationId=${organisationId}`),
 };
 
 export const dashboardAPI = {

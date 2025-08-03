@@ -62,7 +62,7 @@ const formSchema = z
 
 type FormValues = z.infer<typeof formSchema>;
 
-const VesselFormOne = ({ handleSelect }: any) => {
+const VesselFormOne = ({ handleSelect, vessel }: any) => {
   const [organizations, setOrganizations] = useState([] as any[]);
   const [loadingOrgs, setLoadingOrgs] = useState(false);
 
@@ -80,12 +80,23 @@ const VesselFormOne = ({ handleSelect }: any) => {
       similarSisterGroup: "None",
     },
   });
-
+  const storedOrgId =
+    typeof window !== "undefined"
+      ? localStorage.getItem("organizationId")
+      : null;
   useEffect(() => {
     const fetchOrganizations = async () => {
       setLoadingOrgs(true);
       try {
         const response = await organizationAPI.getOrg();
+
+        if (vessel) {
+          const orgData = response.data.data.data;
+          const selectedOrg = orgData.find(
+            (org: any) => org._id === storedOrgId
+          );
+          form.setValue("ownerId", selectedOrg?._id || "");
+        }
         setOrganizations(response?.data?.data?.data || []);
       } catch (err: any) {
         console.error("Failed to fetch organizations:", err);
@@ -95,7 +106,7 @@ const VesselFormOne = ({ handleSelect }: any) => {
       }
     };
     fetchOrganizations();
-  }, []);
+  }, [vessel, storedOrgId]);
 
   const onSubmit = async (values: FormValues) => {
     try {
@@ -142,7 +153,7 @@ const VesselFormOne = ({ handleSelect }: any) => {
                 ? organizations
                 : [{ label: "No organizations available", value: "" }]
             }
-            disabled={organizations.length === 0}
+            disabled={organizations.length === 0||vessel}
           />
 
           {/* Vessel Name */}
