@@ -7,9 +7,10 @@ import { useForm } from "react-hook-form";
 import { Form } from "../ui/form";
 import FormInput from "../common/FormInput";
 
-import { organizationAPI } from "@/lib/api";
+import { authAPI, organizationAPI } from "@/lib/api";
 
 import { SelectBox } from "../common/SelectBox";
+import { toast } from "sonner";
 
 const FLEET_GROUPS = [
   "Fleet A",
@@ -120,8 +121,18 @@ const VesselFormOne = ({ handleSelect, vessel }: any) => {
         assignFleetGroup: values.assignFleetGroup,
         similarSisterGroup: values.similarSisterGroup,
       };
-      localStorage.setItem("vesselOne", JSON.stringify(payload));
-      handleSelect();
+      try {
+        const response = await authAPI.checkUserEmail(values.captainEmail);
+        console.log(response, "response");
+        localStorage.setItem("vesselOne", JSON.stringify(payload));
+        handleSelect();
+      } catch (error: any) {
+        console.error("Failed to check user email:", error);
+        toast.error("Email already exists");
+      }
+
+      // return;
+
       console.log(payload, "payload");
     } catch (error: any) {
       console.error("Failed to create owner:", error);
@@ -153,7 +164,7 @@ const VesselFormOne = ({ handleSelect, vessel }: any) => {
                 ? organizations
                 : [{ label: "No organizations available", value: "" }]
             }
-            disabled={organizations.length === 0||vessel}
+            disabled={organizations.length === 0 || vessel}
           />
 
           {/* Vessel Name */}

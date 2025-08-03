@@ -10,6 +10,9 @@ export const authAPI = {
 
   login: (credentials: any): Promise<any> =>
     api.post('/api/auth/login', credentials),
+
+  checkUserEmail: (email: string): Promise<any> =>
+    api.get(`/api/v1/user/check-user-email?search=${email}`),
 };
 
 export const organizationAPI = {
