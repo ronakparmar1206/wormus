@@ -114,7 +114,7 @@ export function LineCharts({
             {/* Value area with gradient fill and the CSS-like horizontal gradient stroke */}
             <Area
               dataKey="value"
-              type="natural"
+              type="monotone"
               fill="url(#fillValue)"
               stroke="url(#strokeValue)"
               fillOpacity={1}
